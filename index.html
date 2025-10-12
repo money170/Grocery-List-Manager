@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grocery List Manager</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🛒 Grocery List Manager</h1>
+            <div class="list-selector">
+                <select id="listSelector">
+                    <option value="">Select a list...</option>
+                </select>
+                <button id="newListBtn" class="btn btn-primary">+ New List</button>
+            </div>
+        </header>
+
+        <main id="mainContent" style="display: none;">
+            <div class="list-controls">
+                <h2 id="currentListName"></h2>
+                <div class="list-actions">
+                    <button id="shoppingModeBtn" class="btn btn-primary">🛍️ Shopping Mode</button>
+                    <button id="renameListBtn" class="btn btn-secondary">Rename</button>
+                    <button id="deleteListBtn" class="btn btn-danger">Delete</button>
+                </div>
+            </div>
+
+            <div class="add-item-section">
+                <h3>Add Item</h3>
+                <form id="addItemForm">
+                    <div class="form-group">
+                        <input type="text" id="itemName" placeholder="Item name" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="text" id="itemQuantity" placeholder="Quantity (e.g., 2, 1kg)" value="1">
+                        </div>
+                        <div class="form-group">
+                            <select id="itemCategory" required>
+                                <option value="Produce">🥬 Produce</option>
+                                <option value="Dairy">🥛 Dairy</option>
+                                <option value="Meat">🥩 Meat</option>
+                                <option value="Bakery">🍞 Bakery</option>
+                                <option value="Frozen">❄️ Frozen</option>
+                                <option value="Pantry">🥫 Pantry</option>
+                                <option value="Beverages">🥤 Beverages</option>
+                                <option value="Snacks">🍿 Snacks</option>
+                                <option value="Other">📦 Other</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="filter-section">
+                <label for="categoryFilter">Filter by category:</label>
+                <select id="categoryFilter">
+                    <option value="all">All Categories</option>
+                    <option value="Produce">🥬 Produce</option>
+                    <option value="Dairy">🥛 Dairy</option>
+                    <option value="Meat">🥩 Meat</option>
+                    <option value="Bakery">🍞 Bakery</option>
+                    <option value="Frozen">❄️ Frozen</option>
+                    <option value="Pantry">🥫 Pantry</option>
+                    <option value="Beverages">🥤 Beverages</option>
+                    <option value="Snacks">🍿 Snacks</option>
+                    <option value="Other">📦 Other</option>
+                </select>
+                <div class="stats">
+                    <span id="itemStats">0 items</span>
+                </div>
+            </div>
+
+            <div class="items-section">
+                <div class="active-items">
+                    <div class="section-header">
+                        <h3>Shopping List</h3>
+                    </div>
+                    <ul id="activeItemsList" class="items-list">
+                    </ul>
+                </div>
+
+                <div class="completed-items">
+                    <div class="section-header">
+                        <h3>Purchased</h3>
+                        <button id="clearCompletedBtn" class="btn btn-secondary btn-sm">Clear Completed</button>
+                    </div>
+                    <ul id="completedItemsList" class="items-list">
+                    </ul>
+                </div>
+            </div>
+        </main>
+
+        <div id="emptyState" class="empty-state">
+            <p>👋 Welcome to Grocery List Manager!</p>
+            <p>Create a new list to get started.</p>
+        </div>
+    </div>
+
+    <!-- Shopping Mode Overlay -->
+    <div id="shoppingModeOverlay" class="shopping-mode-overlay" style="display: none;">
+        <div class="shopping-mode-header">
+            <h2 id="shoppingModeListName"></h2>
+            <button id="exitShoppingModeBtn" class="btn btn-exit">✕ Exit</button>
+        </div>
+        <div class="shopping-mode-content">
+            <div class="shopping-mode-stats">
+                <span id="shoppingModeStats"></span>
+            </div>
+            <ul id="shoppingModeItemsList" class="shopping-mode-items">
+            </ul>
+            <div class="shopping-mode-completed">
+                <h3>✓ Purchased</h3>
+                <ul id="shoppingModeCompletedList" class="shopping-mode-items">
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
+
