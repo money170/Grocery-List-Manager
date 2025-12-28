@@ -9,12 +9,21 @@
 <body>
     <div class="container">
         <header>
-            <h1>🛒 Grocery List Manager</h1>
+            <div class="header-top">
+                <h1>🛒 Grocery List Manager</h1>
+                <button id="darkModeToggle" class="btn btn-icon" title="Toggle Dark Mode">🌙</button>
+            </div>
             <div class="list-selector">
                 <select id="listSelector">
                     <option value="">Select a list...</option>
                 </select>
                 <button id="newListBtn" class="btn btn-primary">+ New List</button>
+                <button id="newListFromTemplateBtn" class="btn btn-secondary" title="New from Template">📋 Template</button>
+                <button id="importListBtn" class="btn btn-secondary" title="Import List">📥 Import</button>
+            </div>
+            <div class="list-filter-tabs">
+                <button id="showAllListsBtn" class="tab-btn active">All Lists</button>
+                <button id="showArchivedListsBtn" class="tab-btn">Archived</button>
             </div>
         </header>
 
@@ -23,7 +32,10 @@
                 <h2 id="currentListName"></h2>
                 <div class="list-actions">
                     <button id="shoppingModeBtn" class="btn btn-primary">🛍️ Shopping Mode</button>
+                    <button id="printListBtn" class="btn btn-secondary" title="Print List">🖨️ Print</button>
+                    <button id="exportListBtn" class="btn btn-secondary" title="Export List">💾 Export</button>
                     <button id="renameListBtn" class="btn btn-secondary">Rename</button>
+                    <button id="archiveListBtn" class="btn btn-secondary" title="Archive List">📦 Archive</button>
                     <button id="deleteListBtn" class="btn btn-danger">Delete</button>
                 </div>
             </div>
@@ -32,7 +44,8 @@
                 <h3>Add Item</h3>
                 <form id="addItemForm">
                     <div class="form-group">
-                        <input type="text" id="itemName" placeholder="Item name" required>
+                        <input type="text" id="itemName" placeholder="Item name" required list="itemSuggestions">
+                        <datalist id="itemSuggestions"></datalist>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
@@ -51,9 +64,27 @@
                                 <option value="Other">📦 Other</option>
                             </select>
                         </div>
+                        <div class="form-group">
+                            <select id="itemPriority">
+                                <option value="normal">Normal</option>
+                                <option value="high">⭐ Must Have</option>
+                                <option value="low">Nice to Have</option>
+                            </select>
+                        </div>
                         <button type="submit" class="btn btn-primary">Add</button>
                     </div>
+                    <div class="form-group">
+                        <textarea id="itemNotes" placeholder="Notes (optional)" rows="2"></textarea>
+                    </div>
                 </form>
+                <div class="quick-add-section">
+                    <h4>Quick Add</h4>
+                    <div id="quickAddButtons" class="quick-add-buttons"></div>
+                    <div id="favoritesSection" class="favorites-section">
+                        <h4>Favorites</h4>
+                        <div id="favoritesButtons" class="quick-add-buttons"></div>
+                    </div>
+                </div>
             </div>
 
             <div class="filter-section">
@@ -79,6 +110,13 @@
                 <div class="active-items">
                     <div class="section-header">
                         <h3>Shopping List</h3>
+                        <div class="bulk-actions" id="bulkActions" style="display: none;">
+                            <button id="bulkSelectAllBtn" class="btn btn-secondary btn-sm">Select All</button>
+                            <button id="bulkMarkPurchasedBtn" class="btn btn-primary btn-sm">Mark Purchased</button>
+                            <button id="bulkDeleteBtn" class="btn btn-danger btn-sm">Delete Selected</button>
+                            <button id="bulkCancelBtn" class="btn btn-secondary btn-sm">Cancel</button>
+                        </div>
+                        <button id="bulkSelectModeBtn" class="btn btn-secondary btn-sm">Select Multiple</button>
                     </div>
                     <ul id="activeItemsList" class="items-list">
                     </ul>
@@ -101,19 +139,62 @@
         </div>
     </div>
 
+    <!-- Modals -->
+    <div id="templateModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>List Templates</h2>
+                <button class="modal-close" id="closeTemplateModal">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="template-actions">
+                    <button id="saveAsTemplateBtn" class="btn btn-primary">Save Current List as Template</button>
+                </div>
+                <div id="templatesList" class="templates-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="importModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Import List</h2>
+                <button class="modal-close" id="closeImportModal">✕</button>
+            </div>
+            <div class="modal-body">
+                <p>Paste JSON or CSV data:</p>
+                <textarea id="importData" rows="10" placeholder='JSON: {"name":"List Name","items":[...]}&#10;CSV: Item Name,Quantity,Category'></textarea>
+                <div class="modal-actions">
+                    <button id="importSubmitBtn" class="btn btn-primary">Import</button>
+                    <button id="importFileBtn" class="btn btn-secondary">Import from File</button>
+                    <input type="file" id="importFileInput" accept=".json,.csv" style="display: none;">
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Shopping Mode Overlay -->
     <div id="shoppingModeOverlay" class="shopping-mode-overlay" style="display: none;">
-        <div class="shopping-mode-header">
+        <div class="shopping-mode-header" id="shoppingModeHeader">
             <h2 id="shoppingModeListName"></h2>
-            <button id="exitShoppingModeBtn" class="btn btn-exit">✕ Exit</button>
+            <div class="shopping-mode-header-actions">
+                <button id="superFullScreenBtn" class="btn btn-super-fullscreen" title="Super Full Screen">⛶</button>
+                <button id="exitShoppingModeBtn" class="btn btn-exit">✕ Exit</button>
+            </div>
+        </div>
+        <div class="shopping-mode-mini-header" id="shoppingModeMiniHeader" style="display: none;">
+            <span id="shoppingModeMiniStats"></span>
+            <div class="mini-header-actions">
+                <button id="exitSuperFullScreenBtn" class="btn btn-exit-mini">✕</button>
+            </div>
         </div>
         <div class="shopping-mode-content">
-            <div class="shopping-mode-stats">
+            <div class="shopping-mode-stats" id="shoppingModeStatsContainer">
                 <span id="shoppingModeStats"></span>
             </div>
             <ul id="shoppingModeItemsList" class="shopping-mode-items">
             </ul>
-            <div class="shopping-mode-completed">
+            <div class="shopping-mode-completed" id="shoppingModeCompletedContainer">
                 <h3>✓ Purchased</h3>
                 <ul id="shoppingModeCompletedList" class="shopping-mode-items">
                 </ul>
